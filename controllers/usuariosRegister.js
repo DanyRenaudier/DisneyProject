@@ -1,10 +1,7 @@
 const bcryptjs = require('bcryptjs');
 
-
 const Usuarios= require('../models/usuarios');
 const setToken = require('../helpers/setToken');
-
-
 
 const registerPost=async(req,res)=>{
     
@@ -20,18 +17,17 @@ const registerPost=async(req,res)=>{
         //Guardar en DB
         await usuario.save();
 
-        //Seteo de token al usuario
-        setToken(usuario);
-
-        res.json({
+        //Seteo de token
+        await setToken(usuario,mail);
+        
+        res.status(200).json({
             msg:'Usuario creado con exito!',
-            usuario,
-            token
+            usuario
         })
-    }catch (error) {
-        const msg= error || error.errors[0].message;
-        res.status(409).json({
-            msg
+        
+    }catch(error) {
+        res.status(500).json({
+            error
         })
     }
 
