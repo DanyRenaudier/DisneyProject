@@ -1,8 +1,9 @@
-const {response}=require('express');
 const bcryptjs = require('bcryptjs');
 
-const generateJWT= require('../helpers/generate-jwt')
+
 const Usuarios= require('../models/usuarios');
+const setToken = require('../helpers/setToken');
+
 
 
 const registerPost=async(req,res)=>{
@@ -10,15 +11,6 @@ const registerPost=async(req,res)=>{
     const {nombre, mail, password}=req.body;
     
     try {
-        if(await Usuarios.findOne({
-            where:{
-                mail:mail
-            }
-        })){
-            return res.json({
-                msg:"El usuario ya existe en la DB"
-            })
-        }
         const usuario = Usuarios.build({nombre,mail,password});
 
         //Hash de password
@@ -28,13 +20,8 @@ const registerPost=async(req,res)=>{
         //Guardar en DB
         await usuario.save();
 
-        //Consulta id asignado en DB, creacion y seteo de token
-        const id= await Usuarios.findOne({where:{
-            mail
-        }})
-        const token=await generateJWT(id);
-        
-        await usuario.set({token}).save();
+        //Seteo de token al usuario
+        setToken(usuario);
 
         res.json({
             msg:'Usuario creado con exito!',
