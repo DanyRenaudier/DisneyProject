@@ -16,9 +16,6 @@ const registerPost=async(req,res)=>{
     
         //Guardar en DB
         await usuario.save();
-
-        //Seteo de token
-        await setToken(usuario,mail);
         
         res.status(200).json({
             msg:'Usuario creado con exito!',
